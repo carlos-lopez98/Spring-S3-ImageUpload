@@ -1,8 +1,10 @@
 package com.carloslopez98.awsimageupload.config;
 
 import com.amazonaws.auth.AWSCredentials;
+import com.amazonaws.auth.AWSCredentialsProvider;
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;
+import com.amazonaws.auth.profile.ProfileCredentialsProvider;
 import com.amazonaws.services.macie2.model.AwsAccount;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
@@ -17,12 +19,15 @@ public class AmazonConfig {
     //This will give us the s3 Client
 
     @Bean //--Spring instantiates an instance of this class so we can inject into other classes
-
     public AmazonS3 s3(){
-        AWSCredentials awsCredentials = new BasicAWSCredentials(
-              "AKIAZNW7342XBZLCLG4Z",
-              "1Xa5D381Jy/OF5aFe9HiMG0qJamPsdL5apvgz94m"
-            );
+
+        //Fetches credentials from the AWS config file
+        AWSCredentialsProvider credentials = new ProfileCredentialsProvider();
+
+        AWSCredentials awsCredentials = new
+                BasicAWSCredentials(credentials.getCredentials().getAWSAccessKeyId(), credentials.getCredentials().getAWSSecretKey());
+
+
         return AmazonS3ClientBuilder
                 .standard()
                 .withCredentials(new AWSStaticCredentialsProvider(awsCredentials))
